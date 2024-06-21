@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Page</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <section class="container px-4 mx-auto py-4">
+    <div class="d-flex justify-content-between">
+      <div>
+        <h2 class="text-lg font-medium text-gray-800">Employees</h2>
+        <p class="mt-1 text-sm text-gray-500">This is a list of all employees. You can add new employees.</p>
+      </div>
+      <a href="creatuser.html">
+        <button class="btn btn-success">Add Employee</button>
+      </a>
+    </div>
+    <div class="mt-6">
+      <div class="table-responsive">
+        <table class="table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Employee</th>
+              <th scope="col">Title</th>
+              <th scope="col">Role</th>
+            </tr>
+          </thead>
+          <tbody id="employee-table-body">
+            <!-- Employee data will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    // Function to fetch employee data from the server and populate the table
+    async function fetchAndPopulateEmployees() {
+      try {
+        const response = await fetch(`http://localhost:4000/api/v1/getallUsers`);
+        const data = await response.json();
+        const employees = data.data;
+
+        const tableBody = document.getElementById("employee-table-body");
+
+        // Clear previous data
+        tableBody.innerHTML = "";
+
+        // Populate table with employee data
+        employees.forEach(employee => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="mr-3">
+                  <img src="${employee.image}" alt="${employee.name}" class="rounded-circle" style="width: 50px; height: 50px;">
+                </div>
+                <div>
+                  <div class="font-weight-bold">${employee.name}</div>
+                  <div>${employee.email}</div>
+                </div>
+              </div>
+            </td>
+            <td>${employee.title}<br>${employee.department}</td>
+            <td>${employee.role}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error("Error fetching employee data:", error);
+      }
+    }
+
+    // Call the function to fetch and populate employees when the page loads
+    fetchAndPopulateEmployees();
+  </script>
+</body>
+</html>

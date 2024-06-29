@@ -3,83 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Page</title>
+  <title>User Form</title>
   <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <section class="container px-4 mx-auto py-4">
-    <div class="d-flex justify-content-between">
-      <div>
-        <h2 class="text-lg font-medium text-gray-800">Employees</h2>
-        <p class="mt-1 text-sm text-gray-500">This is a list of all employees. You can add new employees.</p>
+  <div class="container mt-5">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="signup-tab" data-toggle="tab" href="#signup" role="tab" aria-controls="signup" aria-selected="true">Sign Up</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="login-tab" data-toggle="tab" href="#login" role="tab" aria-controls="login" aria-selected="false">Login</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <!-- Signup Form -->
+      <div class="tab-pane fade show active" id="signup" role="tabpanel" aria-labelledby="signup-tab">
+        <form id="signup-form" class="mt-4">
+          <div class="form-group">
+            <label for="signup-name">Name</label>
+            <input type="text" class="form-control" id="signup-name" placeholder="Enter Your Full Name">
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email Id</label>
+            <input type="email" class="form-control" id="signup-email" placeholder="Enter Your Email">
+          </div>
+          <div class="form-group">
+            <label for="signup-mobile">Mobile Number</label>
+            <input type="text" class="form-control" id="signup-mobile" placeholder="Enter Your Mobile Number">
+          </div>
+          <div class="form-group">
+            <label for="signup-role">Role</label>
+            <select class="form-control" id="signup-role">
+              <option value="community member">Community Member</option>
+              <option value="community business">Community Business</option>
+              <option value="community organization">Community Organization</option>
+              <option value="community admin">Community Admin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" class="form-control" id="signup-password" placeholder="Enter Your Password">
+          </div>
+          <button type="button" class="btn btn-success" onclick="createUser()">Create User</button>
+        </form>
       </div>
-      <a href="creatuser.html">
-        <button class="btn btn-success">Add Employee</button>
-      </a>
-    </div>
-    <div class="mt-6">
-      <div class="table-responsive">
-        <table class="table">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">Employee</th>
-              <th scope="col">Title</th>
-              <th scope="col">Role</th>
-            </tr>
-          </thead>
-          <tbody id="employee-table-body">
-            <!-- Employee data will be dynamically inserted here -->
-          </tbody>
-        </table>
+
+      <!-- Login Form -->
+      <div class="tab-pane fade" id="login" role="tabpanel" aria-labelledby="login-tab">
+        <form id="login-form" class="mt-4">
+          <div class="form-group">
+            <label for="login-email">Email Id</label>
+            <input type="email" class="form-control" id="login-email" placeholder="Enter Your Email">
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" class="form-control" id="login-password" placeholder="Enter Your Password">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="loginUser()">Login</button>
+        </form>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- Bootstrap JS and dependencies -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
-    // Function to fetch employee data from the server and populate the table
-    async function fetchAndPopulateEmployees() {
-      try {
-        const response = await fetch(`http://localhost:4000/api/v1/getallUsers`);
-        const data = await response.json();
-        const employees = data.data;
+    // Function to handle user creation
+    function createUser() {
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const mobile = document.getElementById('signup-mobile').value;
+      const role = document.getElementById('signup-role').value;
+      const password = document.getElementById('signup-password').value;
 
-        const tableBody = document.getElementById("employee-table-body");
-
-        // Clear previous data
-        tableBody.innerHTML = "";
-
-        // Populate table with employee data
-        employees.forEach(employee => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>
-              <div class="d-flex align-items-center">
-                <div class="mr-3">
-                  <img src="${employee.image}" alt="${employee.name}" class="rounded-circle" style="width: 50px; height: 50px;">
-                </div>
-                <div>
-                  <div class="font-weight-bold">${employee.name}</div>
-                  <div>${employee.email}</div>
-                </div>
-              </div>
-            </td>
-            <td>${employee.title}<br>${employee.department}</td>
-            <td>${employee.role}</td>
-          `;
-          tableBody.appendChild(row);
-        });
-      } catch (error) {
-        console.error("Error fetching employee data:", error);
+      // Validation
+      if (!name || !email || !mobile || !role || !password) {
+        alert("Please fill all fields");
+        return;
       }
+
+      const data = {
+        name: name,
+        email: email,
+        mobile: mobile,
+        role: role,
+        password: password
+      };
+
+      // Form submission with fetch
+      fetch(`http://localhost:4000/api/v1/user/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => {
+        if (response.ok) {
+          // Redirect to home page after form submission
+          window.location.href = "index.html";
+        } else {
+          return response.json().then(data => { throw new Error(data.message); });
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("Error creating user: " + error.message);
+      });
     }
 
-    // Call the function to fetch and populate employees when the page loads
-    fetchAndPopulateEmployees();
+    // Function to handle user login
+    function loginUser() {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      // Validation
+      if (!email || !password) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      const data = {
+        email: email,
+        password: password
+      };
+
+      // Form submission with fetch
+      fetch(`http://localhost:4000/api/v1/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          return response.json().then(data => { throw new Error(data.message); });
+        }
+      })
+      .then(data => {
+        // Save token in local storage or as a cookie
+        document.cookie = `token=${data.token}; path=/;`;
+        // Redirect to home page after login
+        window.location.href = "profile.html";
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("Error logging in: " + error.message);
+      });
+    }
   </script>
 </body>
 </html>

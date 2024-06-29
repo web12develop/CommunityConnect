@@ -1,14 +1,7 @@
-// Importing the Mongoose library
 const mongoose = require("mongoose");
-
-// Importing the environment variables using the dotenv library
 require("dotenv");
 
-// Defining a function to connect to the database
-const dbConnect = () => {
-	// Connecting to the database using the provided URL from the environment variables
-	mongoose
-		.connect(process.env.DATABASE_URL, {
+const dbConnect = () => {mongoose.connect(process.env.DATABASE_URL,{
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
 		})
@@ -22,5 +15,4 @@ const dbConnect = () => {
 		});
 };
 
-// Exporting the dbConnect function for use in other files
 module.exports = dbConnect;
